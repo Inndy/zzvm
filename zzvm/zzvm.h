@@ -9,11 +9,7 @@
 typedef struct __attribute__((__packed__)) {
     uint8_t op;
     uint8_t reg;
-    union {
-        uint16_t imm;
-        int16_t imms;
-        uint8_t immb[2];
-    };
+    uint16_t imm;
 } ZZ_INSTRUCTION;
 
 typedef struct __attribute__((__packed__)) {
