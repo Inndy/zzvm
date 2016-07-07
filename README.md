@@ -9,3 +9,7 @@ Just a simple VM.
 - [ ] Assembler
 - [ ] Invent A Language
 - [ ] Comiler to ZZVM
+
+## License
+
+[MIT License](LICENSE)
