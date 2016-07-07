@@ -49,6 +49,7 @@ typedef struct {
 typedef uint16_t ZZ_ADDRESS;
 
 // ZZVM.state
+// TODO: More 1337 numb3rs
 #define ZZ_ST_SLEEP 0xF2EE1111
 #define ZZ_ST_FREED 0xDEADC0DE
 #define ZZ_ST_EXEC  0x13136644
