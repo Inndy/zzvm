@@ -10,4 +10,4 @@ zzvm: main.o zzvm.o
 	$(CC) $< -c $(CFLAGS)
 
 clean:
-	rm *.o
+	rm *.o zzvm
