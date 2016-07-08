@@ -211,6 +211,8 @@ int run_file(const char *filename, int trace)
         return 0;
     }
 
+    zz_msg_pipe = stdout;
+
     int stop_reason = ZZ_SUCCESS;
     while(stop_reason != ZZ_HALT) {
         int ret_val = zz_execute(vm, 1, &stop_reason);
