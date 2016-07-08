@@ -50,11 +50,11 @@ int main()
     zz_put_code(vm, 0x4000, ins, sizeof(ins) / sizeof(ins[0]));
 
     zz_execute(vm, 1, &reason);
-    zz_dump_context(vm, buffer); printf("%s", buffer);
+    zz_dump_context(&vm->ctx, buffer); printf("%s", buffer);
 
     zz_execute(vm, 5, &reason);
-    zz_dump_context(vm, buffer); printf("%s", buffer);
+    zz_dump_context(&vm->ctx, buffer); printf("%s", buffer);
 
     zz_execute(vm, -1, &reason);
-    zz_dump_context(vm, buffer); printf("%s", buffer);
+    zz_dump_context(&vm->ctx, buffer); printf("%s", buffer);
 }

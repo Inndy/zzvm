@@ -140,9 +140,8 @@ uint64_t zz_rand(ZZVM_CTX *ctx)
 	return ctx->random_seed * UINT64_C(2685821657736338717);
 }
 
-int zz_dump_context(ZZVM *vm, char *buffer)
+int zz_dump_context(ZZVM_CTX *ctx, char *buffer)
 {
-    ZZVM_CTX *ctx = &vm->ctx;
     int i, r;
 
     r = sprintf(buffer,

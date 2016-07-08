@@ -79,7 +79,7 @@ int zz_put_code(ZZVM *vm, ZZ_ADDRESS addr, ZZ_INSTRUCTION *ins, size_t count);
 
 uint64_t zz_rand(ZZVM_CTX *ctx);
 
-int zz_dump_context(ZZVM *vm, char *buffer);
+int zz_dump_context(ZZVM_CTX *ctx, char *buffer);
 int zz_execute(ZZVM *vm, int count, int *stop_reason);
 
 void zz_output_message(int level, char *msg, ...);
