@@ -25,25 +25,25 @@ const char * const ZZ_OP_NAME[] = {
     /* 0x09 */ "OR",
     /* 0x0a */ "XOR",
     /* 0x0b */ "XOR",
-    /* 0x0c */ "NOT",
-    /* 0x0d */ "LD",
-    /* 0x0e */ "ST",
-    /* 0x0f */ "HLT",
-    /* 0x10 */ "MOV",
-    /* 0x11 */ "MOV",
-    /* 0x12 */ "JE",
-    /* 0x13 */ "JN",
-    /* 0x14 */ "JG",
-    /* 0x15 */ "JZ",
-    /* 0x16 */ "CALL",
-    /* 0x17 */ "RET",
-    /* 0x18 */ "POP",
-    /* 0x19 */ "PUSH",
-    /* 0x1a */ "PUSH",
-    /* 0x1b */ "SYS",
-    /* 0x1c */ "RAND",
-    /* 0x1d */ "XXX",
-    /* 0x1e */ "XXX",
+    /* 0x0c */ "SHR",
+    /* 0x0d */ "SHR",
+    /* 0x0e */ "NOT",
+    /* 0x0f */ "LD",
+    /* 0x10 */ "ST",
+    /* 0x11 */ "HLT",
+    /* 0x12 */ "MOV",
+    /* 0x13 */ "MOV",
+    /* 0x14 */ "JE",
+    /* 0x15 */ "JN",
+    /* 0x16 */ "JG",
+    /* 0x17 */ "JZ",
+    /* 0x18 */ "CALL",
+    /* 0x19 */ "RET",
+    /* 0x1a */ "POP",
+    /* 0x1b */ "PUSH",
+    /* 0x1c */ "PUSH",
+    /* 0x1d */ "SYS",
+    /* 0x1e */ "RAND",
     /* 0x1f */ "XXX",
 };
 
@@ -176,6 +176,9 @@ uint16_t zz_pop(ZZVM_CTX *ctx)
     return data;
 }
 
+#define ZZ_SHIFT(VALUE, OFFSET) ((OFFSET) & 8) ? (VALUE << (OFFSET & 7)) : \
+                                                 (VALUE >> (OFFSET & 7))
+
 int zz_execute(ZZVM *vm, int count, int *stop_reason)
 {
     if(vm->state != ZZ_ST_SLEEP) {
@@ -233,6 +236,8 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
             case ZZOP_ORI:  rega[r1] = rega[r2] | ins->imm; break;
             case ZZOP_XORR: rega[r1] = rega[r2] ^ rega[r3]; break;
             case ZZOP_XORI: rega[r1] = rega[r2] ^ ins->imm; break;
+            case ZZOP_SHRR: rega[r1] = ZZ_SHIFT(rega[r2], rega[r3]); break;
+            case ZZOP_SHRI: rega[r1] = ZZ_SHIFT(rega[r2], ins->imm); break;
             case ZZOP_NOT:  rega[r1] = ~rega[r2]; break;
             case ZZOP_LD:   rega[r1] = *ZZ_MEM(ctx, uint16_t, rega[r2] + ins->imm); break;
             case ZZOP_ST:   *ZZ_MEM(ctx, uint16_t, rega[r2] + ins->imm) = rega[r1]; break;
@@ -412,6 +417,7 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
         case ZZOP_ANDR:
         case ZZOP_ORR:
         case ZZOP_XORR:
+        case ZZOP_SHRR:
             return _zz_disasm_3r(buffer, limit, ip, ins);
 
         case ZZOP_ADDI:
@@ -422,6 +428,7 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
         case ZZOP_ANDI:
         case ZZOP_ORI:
         case ZZOP_XORI:
+        case ZZOP_SHRI:
             return _zz_disasm_3i(buffer, limit, ip, ins);
 
         case ZZOP_JEI:
