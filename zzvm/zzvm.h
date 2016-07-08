@@ -82,6 +82,8 @@ uint64_t zz_rand(ZZVM_CTX *ctx);
 int zz_dump_context(ZZVM_CTX *ctx, char *buffer, size_t buffer_size);
 int zz_execute(ZZVM *vm, int count, int *stop_reason);
 
+extern FILE *zz_msg_pipe;
+extern int zz_msg_level;
 void zz_output_message(int level, char *msg, ...);
 
 #define zz_debug(MSG) zz_output_message(ZZ_MSGL_DEBUG, MSG)

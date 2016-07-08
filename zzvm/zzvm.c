@@ -53,7 +53,7 @@ void zz_output_message(int level, char *msg, ...)
         return;
     }
     if(zz_msg_pipe == NULL) {
-        zz_msg_pipe = stderr;
+        return;
     }
 
     va_list args;
