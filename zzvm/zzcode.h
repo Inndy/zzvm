@@ -1,33 +1,3 @@
-/*
- * # MUST HAVE
- * nop, hlt
- *
- * # ALU
- * add, mul, neg
- * addi, muli
- * and, or, xor, not
- * andi, ori, xori
- *
- * # MEM
- * ld, st
- *
- * # DATA
- * mov, movi
- *
- * # CONTROL FLOW
- * je, jn, jg, jz
- * jei, jni, jgi
- *
- * # FUNCTION
- * call, ret
- *
- * # STACK
- * push, pushi, pop
- *
- * # SPECIAL
- * sys, rand
- */
-
 enum ZZOP {
     ZZOP_NOP    = 0x00,
     ZZOP_NEG    = 0x01,
