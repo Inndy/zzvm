@@ -26,7 +26,12 @@ int main()
         { ZZOP_JNI,  0x20, -16    }, // 4040: JN    R2, RA, 0x4034
         { ZZOP_ADDI, 0x77, 4      }, // 4044: JMP   0x404c
         { ZZOP_NOP,  0,    0      }, // 4048: NOP
-        { ZZOP_HLT,  0,    0      }, // 404c: HLT
+        { ZZOP_MOVI, 0,    0xffff }, // 404c: MOV   RA, 0xffff
+        { ZZOP_SHRI, 0x10, 1      }, // 4050: SHR   R1, RA, 0x0001
+        { ZZOP_SHRI, 0x21, 8|1    }, // 4054: SHR   R2, R1, 0x0009
+        { ZZOP_MOVI, 0x30, 4      }, // 4058: MOV   R3, 0x0004
+        { ZZOP_SHRR, 0x00, 3      }, // 405c: SHR   RA, RA, R3
+        { ZZOP_HLT,  0,    0      }, // 4060: HLT
     };
 
     for(i = 0; i < sizeof(ins) / sizeof(ins[0]); i++) {
