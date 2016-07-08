@@ -102,23 +102,15 @@ int zz_read_image_section(FILE *fp, ZZ_SECTION_HEADER *section)
     return 1;
 }
 
-int zz_load_image_header(const char *filename, FILE **out_fp, ZZ_IMAGE_HEADER **out_header)
+int zz_load_image_header(FILE *fp, ZZ_IMAGE_HEADER **out_header)
 {
-    FILE *fp;
     ZZ_IMAGE_HEADER *header = (ZZ_IMAGE_HEADER *)malloc(sizeof(ZZ_IMAGE_HEADER));
 
-    fp = fopen(filename, "rb");
-
-    if(!fp) {
-        fprintf(stderr, "Unable to open file\n");
-        goto fail;
-    }
-
     if(!zz_read_image_header(fp, header)) {
-        goto fail;
+        return 0;
     }
     if(!zz_verify_image_header(header)) {
-        goto fail;
+        return 0;
     }
 
     header = (ZZ_IMAGE_HEADER *)realloc(header, sizeof(ZZ_IMAGE_HEADER) +
@@ -126,27 +118,31 @@ int zz_load_image_header(const char *filename, FILE **out_fp, ZZ_IMAGE_HEADER **
 
     for(int i = 0; i < header->section_count; i++) {
         if(!zz_read_image_section(fp, &header->sections[i])) {
-            goto fail;
+            return 0;
         }
     }
 
-    *out_fp = fp;
     *out_header = header;
     return 1;
-
-fail:
-    if(fp) {
-        fclose(fp);
-    }
-    return 0;
 }
 
 int zz_load_image_to_vm(const char *filename, ZZVM *vm)
 {
-    FILE *fp = NULL;
+    FILE *fp;
     ZZ_IMAGE_HEADER *header = NULL;
 
-    if(!zz_load_image_header(filename, &fp, &header)) {
+    if(strcmp(filename, "-") == 0 || filename == NULL) {
+        fp = stdin;
+    } else {
+        fp = fopen(filename, "rb");
+    }
+
+    if(!fp) {
+        fprintf(stderr, "Unable to open file\n");
+        return 0;
+    }
+
+    if(!zz_load_image_header(fp, &header)) {
         return 0;
     }
 
@@ -183,14 +179,14 @@ int zz_load_image_to_vm(const char *filename, ZZVM *vm)
         }
     }
 
-    fclose(fp);
+    if(fp != stdin) fclose(fp);
     free(header);
     free(buffer);
 
     return 1;
 
 fail:
-    if(fp) fclose(fp);
+    if(fp && fp != stdin) fclose(fp);
     if(header) free(header);
     if(buffer) free(buffer);
     return 0;
