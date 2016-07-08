@@ -140,23 +140,26 @@ uint64_t zz_rand(ZZVM_CTX *ctx)
 	return ctx->random_seed * UINT64_C(2685821657736338717);
 }
 
-int zz_dump_context(ZZVM_CTX *ctx, char *buffer)
+int zz_dump_context(ZZVM_CTX *ctx, char *buffer, size_t buffer_size)
 {
     int i, r;
 
-    r = sprintf(buffer,
+    r = snprintf(buffer, buffer_size,
             "--- Registers ---\n"
             "RA: 0x%.4x\n" "R1: 0x%.4x\n" "R2: 0x%.4x\n" "R3: 0x%.4x\n"
-            "R4: 0x%.4x\n" "R5: 0x%.4x\n" "SP: 0x%.4x\n" "IP: 0x%.4x\n",
+            "R4: 0x%.4x\n" "R5: 0x%.4x\n" "SP: 0x%.4x\n" "IP: 0x%.4x\n"
+            "--- Stack ---\n",
             ctx->regs.RA, ctx->regs.R1, ctx->regs.R2, ctx->regs.R3,
             ctx->regs.R4, ctx->regs.R5, ctx->regs.SP, ctx->regs.IP
             );
 
-    r += sprintf(buffer + r, "--- Stack ---\n");
     for(i = 0; i < 8; i++) {
+        if(r >= buffer_size) {
+            break;
+        }
         ZZ_ADDRESS addr = ctx->regs.SP + i * sizeof(ctx->regs.RA);
-        r += sprintf(buffer + r, "0x%.4x: 0x%.4x\n", addr,
-                     *(uint16_t*)&ctx->memory[addr]);
+        r += snprintf(buffer + r, buffer_size - r, "0x%.4x: 0x%.4x\n", addr,
+                *(uint16_t*)&ctx->memory[addr]);
     }
     return r;
 }
