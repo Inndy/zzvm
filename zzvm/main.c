@@ -215,18 +215,22 @@ int run_file(const char *filename, int trace)
         return 0;
     }
 
-    zz_msg_pipe = stdout;
+    zz_msg_pipe = stderr;
 
     int stop_reason = ZZ_SUCCESS;
     while(stop_reason != ZZ_HALT) {
         int ret_val = zz_execute(vm, 1, &stop_reason);
 
         if(trace) {
+            char buffer[64];
+            ZZ_INSTRUCTION *ins = zz_fetch(&vm->ctx);
+            zz_disasm(vm->ctx.regs.IP, ins, buffer, sizeof(buffer) - 1);
+            fprintf(zz_msg_pipe, "[TRACE] %.4x: %s\n", vm->ctx.regs.IP, buffer);
             dump_vm_context(vm);
         }
 
         if(ret_val != ZZ_SUCCESS) {
-            fprintf(stderr, "Failed to execute, stop_reason = %d\n", stop_reason);
+            fprintf(zz_msg_pipe, "Failed to execute, stop_reason = %d\n", stop_reason);
             break;
         }
     }

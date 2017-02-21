@@ -91,6 +91,9 @@ int zz_put_code(ZZVM *vm, ZZ_ADDRESS addr, ZZ_INSTRUCTION *ins, size_t count);
 
 uint64_t zz_rand(ZZVM_CTX *ctx);
 
+// assistant API for exection
+ZZ_INSTRUCTION * zz_fetch(ZZVM_CTX *ctx);
+
 int zz_dump_context(ZZVM_CTX *ctx, char *buffer, size_t buffer_size);
 int zz_execute(ZZVM *vm, int count, int *stop_reason);
 

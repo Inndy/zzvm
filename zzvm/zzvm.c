@@ -239,15 +239,6 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
 
         ZZ_INSTRUCTION *ins = zz_fetch(ctx);
 
-        int trace = 1;
-        if(trace)
-        {
-            char buffer[64];
-            snprintf(buffer, sizeof(buffer), "%.4x: ", regs->IP);
-            zz_disasm(regs->IP, ins, buffer + 6, sizeof(buffer) - 6);
-            zz_msg_f("[TRACE] %s\n", buffer);
-        }
-
         uint8_t r1 = ins->reg >> 4;
         uint8_t r2 = ins->reg & 0xf;
         uint8_t r3 = ins->imm & 7;
