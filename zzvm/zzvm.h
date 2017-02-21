@@ -1,6 +1,15 @@
 #ifndef ZZVM_H
 #define ZZVM_H
 
+#if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__) || defined(__MACH__)
+#define ZZ_UNIX_ENV
+#endif
+
+#ifdef ZZ_UNIX_ENV
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 #include <stdint.h>
 #include "zzcode.h"
 

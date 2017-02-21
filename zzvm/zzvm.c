@@ -72,7 +72,17 @@ int zz_create(ZZVM **p_vm)
     }
 
     memset(&vm->ctx, 0, sizeof(ZZVM_CTX));
-    vm->ctx.random_seed = time(NULL) ^ (uint64_t)p_vm ^ (uint64_t)vm;
+    vm->ctx.random_seed = time(NULL) ^ (uint64_t)&vm ^ (uint64_t)p_vm ^ (uint64_t)vm ^ random();
+#ifdef ZZ_UNIX_ENV
+    uint64_t seed;
+    int fd = open("/dev/urandom", O_RDONLY);
+    if (fd >= 0) {
+        if(read(fd, &seed, sizeof seed) == sizeof seed) {
+            vm->ctx.random_seed ^= seed;
+        }
+        close(fd);
+    }
+#endif
     vm->ctx.regs.SP = 0xFFF0;
     vm->state = ZZ_ST_SLEEP;
     *p_vm = vm;
