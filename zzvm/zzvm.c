@@ -167,10 +167,10 @@ int zz_put_code(ZZVM *vm, ZZ_ADDRESS addr, ZZ_INSTRUCTION *ins, size_t count)
 
 uint64_t zz_rand(ZZVM_CTX *ctx)
 {
-	ctx->random_seed ^= ctx->random_seed >> 12; // a
-	ctx->random_seed ^= ctx->random_seed << 25; // b
-	ctx->random_seed ^= ctx->random_seed >> 27; // c
-	return ctx->random_seed * UINT64_C(2685821657736338717);
+    ctx->random_seed ^= ctx->random_seed >> 12; // a
+    ctx->random_seed ^= ctx->random_seed << 25; // b
+    ctx->random_seed ^= ctx->random_seed >> 27; // c
+    return ctx->random_seed * UINT64_C(2685821657736338717);
 }
 
 int zz_dump_context(ZZVM_CTX *ctx, char *buffer, size_t buffer_size)
