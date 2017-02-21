@@ -126,7 +126,7 @@ int zz_load_image_header(FILE *fp, ZZ_IMAGE_HEADER **out_header)
     return 1;
 }
 
-int zz_load_image_to_vm(const char *filename, ZZVM *vm)
+int zz_load_image_to_vm(const char *filename, ZZVM *vm, ZZ_IMAGE_HEADER **out_header)
 {
     FILE *fp;
     ZZ_IMAGE_HEADER *header = NULL;
@@ -180,7 +180,11 @@ int zz_load_image_to_vm(const char *filename, ZZVM *vm)
     }
 
     if(fp != stdin) fclose(fp);
-    free(header);
+    if(out_header) {
+        *out_header = header;
+    } else {
+        free(header);
+    }
     free(buffer);
 
     return 1;
@@ -207,7 +211,7 @@ int run_file(const char *filename, int trace)
         return 0;
     }
 
-    if(!zz_load_image_to_vm(filename, vm)) {
+    if(!zz_load_image_to_vm(filename, vm, NULL)) {
         return 0;
     }
 
