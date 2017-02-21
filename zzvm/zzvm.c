@@ -352,26 +352,26 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_0(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_0(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s", ZZ_OP_NAME[ins->op]);
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_1r(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_1r(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s %s", ZZ_OP_NAME[ins->op], ZZ_REGISTER_NAME[ins->reg >> 4]);
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_2r(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_2r(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s %s, %s", ZZ_OP_NAME[ins->op], ZZ_REGISTER_NAME[ins->reg >> 4],
              ZZ_REGISTER_NAME[ins->reg & 7]);
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_3r(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_3r(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s %s, %s, %s", ZZ_OP_NAME[ins->op],
              ZZ_REGISTER_NAME[ins->reg >> 4], ZZ_REGISTER_NAME[ins->reg & 7],
@@ -379,7 +379,7 @@ int _zz_disasm_3r(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *in
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_1i(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_1i(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s 0x%.4x", ZZ_OP_NAME[ins->op], ins->imm);
     return ZZ_SUCCESS;
@@ -396,7 +396,7 @@ int _zz_disasm_1j(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_2i(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_2i(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s %s, 0x%.4x", ZZ_OP_NAME[ins->op],
              ZZ_REGISTER_NAME[ins->reg >> 4], ins->imm);
@@ -410,7 +410,7 @@ int _zz_disasm_2j(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins
     return ZZ_SUCCESS;
 }
 
-int _zz_disasm_3i(char *buffer, size_t  limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
+int _zz_disasm_3i(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
     snprintf(buffer, limit, "%-5s %s, %s, 0x%.4x", ZZ_OP_NAME[ins->op],
              ZZ_REGISTER_NAME[ins->reg >> 4], ZZ_REGISTER_NAME[ins->reg & 7],
