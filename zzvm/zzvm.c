@@ -412,8 +412,14 @@ int _zz_disasm_2j(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins
 
 int _zz_disasm_3i(char *buffer, size_t limit, ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins)
 {
+    uint8_t r1 = ins->reg >> 4, r2 = ins->reg & 7;
+
+    if(r1 == r2) {
+        return _zz_disasm_2i(buffer, limit, ip, ins);
+    }
+
     snprintf(buffer, limit, "%-5s %s, %s, 0x%.4x", ZZ_OP_NAME[ins->op],
-             ZZ_REGISTER_NAME[ins->reg >> 4], ZZ_REGISTER_NAME[ins->reg & 7],
+             ZZ_REGISTER_NAME[r1], ZZ_REGISTER_NAME[r2],
              ins->imm);
     return ZZ_SUCCESS;
 }
