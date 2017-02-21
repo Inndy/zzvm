@@ -62,6 +62,28 @@ void zz_output_message(int level, char *msg, ...)
     va_end(args);
 }
 
+uint16_t _zz_default_syscall_handler(ZZVM_CTX *ctx)
+{
+    char c;
+
+    switch (ctx->regs.RA) {
+        case 0: // read
+            if(read(0, &c, 1) == 1) {
+                return c;
+            } else {
+                return 0xffff;
+            }
+        case 1: // write
+            c = ctx->regs.R1;
+            if(write(1, &c, 1) == 1) {
+                return 0;
+            } else {
+                return 0xffff;
+            }
+    }
+    return 0;
+}
+
 int zz_create(ZZVM **p_vm)
 {
     *p_vm = NULL;
@@ -83,6 +105,7 @@ int zz_create(ZZVM **p_vm)
         close(fd);
     }
 #endif
+    zz_reg_syscall_handler(vm, _zz_default_syscall_handler);
     vm->ctx.regs.SP = 0xFFF0;
     vm->state = ZZ_ST_SLEEP;
     *p_vm = vm;
@@ -313,7 +336,7 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
                 break;
 
             case ZZOP_SYS:
-                regs->RA = 0;
+                regs->RA = vm->syscall_handler(ctx);
                 break;
 
             case ZZOP_RAND:
@@ -470,4 +493,14 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
             return ZZ_FAILED;
     }
     return ZZ_FAILED;
+}
+
+int zz_reg_syscall_handler(ZZVM *vm, ZZ_SYSCALL_HANDLER handler)
+{
+    if(vm && handler) {
+        vm->syscall_handler = handler;
+        return 0;
+    } else {
+        return 1;
+    }
 }

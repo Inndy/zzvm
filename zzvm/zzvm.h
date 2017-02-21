@@ -50,8 +50,11 @@ typedef struct {
     };
 } ZZVM_CTX;
 
+typedef uint16_t (*ZZ_SYSCALL_HANDLER)(ZZVM_CTX *);
+
 typedef struct {
     uint32_t state;
+	ZZ_SYSCALL_HANDLER syscall_handler;
     ZZVM_CTX ctx;
 } ZZVM;
 
@@ -90,6 +93,8 @@ uint64_t zz_rand(ZZVM_CTX *ctx);
 
 int zz_dump_context(ZZVM_CTX *ctx, char *buffer, size_t buffer_size);
 int zz_execute(ZZVM *vm, int count, int *stop_reason);
+
+int zz_reg_syscall_handler(ZZVM *vm, ZZ_SYSCALL_HANDLER handler);
 
 extern FILE *zz_msg_pipe;
 extern int zz_msg_level;
