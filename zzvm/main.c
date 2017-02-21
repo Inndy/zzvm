@@ -231,10 +231,6 @@ int run_file(const char *filename, int trace)
         }
     }
 
-    if(!trace) {
-        dump_vm_context(vm);
-    }
-
     zz_destroy(vm);
     return 1;
 }
