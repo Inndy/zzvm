@@ -220,6 +220,8 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
         return ZZ_FAILED;
     }
 
+    vm->state = ZZ_ST_EXEC;
+
     ZZVM_CTX *ctx = &vm->ctx;
     ZZ_REGISTERS *regs = &ctx->regs;
     uint16_t *rega = ctx->registers;
@@ -234,6 +236,7 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
         if(regs->IP > (ZZ_MEM_LIMIT - sizeof(ZZ_INSTRUCTION))) {
             zz_error("[ERROR] IP out of bound\n");
             *stop_reason = ZZ_OUT_BOUND;
+            vm->state = ZZ_ST_SLEEP;
             return ZZ_FAILED;
         }
 
@@ -246,6 +249,7 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
         if((r1 & 8) || (r2 & 8)) {
             zz_error("[ERROR] invalid register\n");
             *stop_reason = ZZ_INVALID_REGISTER;
+            vm->state = ZZ_ST_SLEEP;
             return ZZ_FAILED;
         }
 
@@ -271,6 +275,7 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
             case ZZOP_HLT:
                 zz_msg("[MESSAGE] vm halt\n");
                 *stop_reason = ZZ_HALT;
+                vm->state = ZZ_ST_SLEEP;
                 return ZZ_SUCCESS;
 
             case ZZOP_MOVR: rega[r1] = rega[r2]; break;
@@ -336,12 +341,14 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
 
             default:
                 *stop_reason = ZZ_INVALID_INSTRUCTION;
+                vm->state = ZZ_ST_SLEEP;
                 return ZZ_FAILED;
         }
         regs->IP += sizeof(ZZ_INSTRUCTION);
     }
 
     *stop_reason = ZZ_SUCCESS;
+    vm->state = ZZ_ST_SLEEP;
     return ZZ_SUCCESS;
 }
 
