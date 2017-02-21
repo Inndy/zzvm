@@ -239,6 +239,52 @@ int run_file(const char *filename, int trace)
     return 1;
 }
 
+int disassemble_file(const char *filename)
+{
+    ZZVM *vm;
+    if(zz_create(&vm) != ZZ_SUCCESS) {
+        fprintf(stderr, "Can not create vm\n");
+        return 0;
+    }
+
+    ZZ_IMAGE_HEADER *header;
+
+    if(!zz_load_image_to_vm(filename, vm, &header)) {
+        return 0;
+    }
+
+    for(int i = 0; i < header->section_count; i++) {
+        ZZ_SECTION_HEADER *section = &header->sections[i];
+        ZZ_ADDRESS addr = section->section_addr;
+        ZZ_ADDRESS addr_end = addr + section->section_size;
+
+        printf("disassembly for section #%d from 0x%.4x to 0x%.4x\n", i, addr, addr_end);
+        puts("");
+
+        if(addr_end > ZZ_MEM_LIMIT - sizeof(ZZ_INSTRUCTION) || addr_end < addr) {
+            addr_end = ZZ_MEM_LIMIT - sizeof(ZZ_INSTRUCTION);
+        }
+
+        char buffer[128];
+
+        while(addr < addr_end) {
+            ZZ_INSTRUCTION* ins = (ZZ_INSTRUCTION *)&vm->ctx.memory[addr];
+            if(zz_disasm(addr, ins, buffer, sizeof(buffer)) != ZZ_SUCCESS) {
+                fprintf(stderr, "Can not disassemble at address %.4x\n", addr);
+                break;
+            }
+            printf("%.4x %s\n", addr, buffer);
+            addr += sizeof(ZZ_INSTRUCTION);
+        }
+
+        puts("");
+    }
+
+    free(header);
+    zz_destroy(vm);
+    return 1;
+}
+
 void usage(const char *prog)
 {
     printf("Usage: %s <command> zz-image\n\n"
@@ -247,6 +293,8 @@ void usage(const char *prog)
            "      run until HLT instruction\n"
            "    trace\n"
            "      run one step and dump context until HLT instruction\n"
+           "    disasm\n"
+           "      disassemble a zz file\n"
            , prog);
 }
 
@@ -259,6 +307,8 @@ int main(int argc, const char * const argv[])
             run_file(argv[2], 1);
         } else if(strcmp(argv[1], "run") == 0) {
             run_file(argv[2], 0);
+        } else if(strcmp(argv[1], "disasm") == 0) {
+            disassemble_file(argv[2]);
         } else {
             printf("Unknow command %s\n", argv[1]);
         }
