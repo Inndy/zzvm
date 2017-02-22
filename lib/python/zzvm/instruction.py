@@ -36,7 +36,7 @@ class Instruction(object):
         regs = [ Registers.normalize(r) for r in raw_regs ]
 
         if any(regs[i] is None for i in range(required_count)):
-            raise ValueError('required register instruction is missing')
+            raise ValueError('required register is missing (%r)' % self)
 
         return [ r.code if r else 0 for r in regs ]
 
