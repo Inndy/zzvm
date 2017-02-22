@@ -21,6 +21,7 @@ typedef struct __attribute__((__packed__)) {
     ZZ_SECTION_HEADER sections[0];
 } ZZ_IMAGE_HEADER;
 
+// decode a byte of Zz-encoded data (encoded) to buffer (out)
 int zz_decode_byte(const char *encoded, uint8_t *out)
 {
     uint8_t value = 0;
@@ -39,6 +40,7 @@ int zz_decode_byte(const char *encoded, uint8_t *out)
     return 1;
 }
 
+// decode Zz-encoded data from source (src) to buffer (dst)
 int zz_decode_data(void *dst, const void *src, size_t unpacked_size)
 {
     uint8_t *dst8 = (uint8_t *)dst;
@@ -53,6 +55,7 @@ int zz_decode_data(void *dst, const void *src, size_t unpacked_size)
     return 1;
 }
 
+// read and decode header data from file (fp) to buffer (header)
 int zz_read_image_header(FILE *fp, ZZ_IMAGE_HEADER *header)
 {
     char buffer[sizeof(*header) * 8];
@@ -70,6 +73,7 @@ int zz_read_image_header(FILE *fp, ZZ_IMAGE_HEADER *header)
     return 1;
 }
 
+// verify header data (header), checking magic number and file version
 int zz_verify_image_header(ZZ_IMAGE_HEADER *header)
 {
     if(header->magic != ZZ_IMAGE_MAGIC) {
@@ -85,7 +89,8 @@ int zz_verify_image_header(ZZ_IMAGE_HEADER *header)
     return 1;
 }
 
-int zz_read_image_section(FILE *fp, ZZ_SECTION_HEADER *section)
+// read and decode header->sections
+int zz_read_image_header_section(FILE *fp, ZZ_SECTION_HEADER *section)
 {
     char buffer[sizeof(*section) * 8];
 
@@ -102,6 +107,7 @@ int zz_read_image_section(FILE *fp, ZZ_SECTION_HEADER *section)
     return 1;
 }
 
+// read and decode ZZ_IMAGE_HEADER
 int zz_load_image_header(FILE *fp, ZZ_IMAGE_HEADER **out_header)
 {
     ZZ_IMAGE_HEADER *header = (ZZ_IMAGE_HEADER *)malloc(sizeof(ZZ_IMAGE_HEADER));
@@ -117,7 +123,7 @@ int zz_load_image_header(FILE *fp, ZZ_IMAGE_HEADER **out_header)
             sizeof(ZZ_SECTION_HEADER) * header->section_count);
 
     for(int i = 0; i < header->section_count; i++) {
-        if(!zz_read_image_section(fp, &header->sections[i])) {
+        if(!zz_read_image_header_section(fp, &header->sections[i])) {
             return 0;
         }
     }
@@ -126,6 +132,7 @@ int zz_load_image_header(FILE *fp, ZZ_IMAGE_HEADER **out_header)
     return 1;
 }
 
+// read, decode image and put things into an existed vm
 int zz_load_image_to_vm(const char *filename, ZZVM *vm, ZZ_IMAGE_HEADER **out_header)
 {
     FILE *fp;
@@ -196,6 +203,7 @@ fail:
     return 0;
 }
 
+// dump vm context and print
 void dump_vm_context(ZZVM *vm)
 {
     char buffer[1024];
@@ -203,6 +211,7 @@ void dump_vm_context(ZZVM *vm)
     puts(buffer);
 }
 
+// load zz-image into vm and run
 int run_file(const char *filename, int trace)
 {
     ZZVM *vm;
@@ -239,6 +248,7 @@ int run_file(const char *filename, int trace)
     return 1;
 }
 
+// disassemble zz-image file
 int disassemble_file(const char *filename)
 {
     ZZVM *vm;
