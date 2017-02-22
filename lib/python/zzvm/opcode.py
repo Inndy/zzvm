@@ -44,8 +44,8 @@ with open(os.path.abspath(os.path.join(os.path.dirname(__file__),
         if line.startswith('ZZOP_'):
             opname, _, opcode, _, optype, opregs = line.split()
 
-            opname = opname[5:]
-            opcode = int(opcode[:-1], 16)
+            opname = opname[5:]  # skip 'ZZOP_'
+            opcode = int(opcode[:-1], 16)  # remove trailing ','
             opregs = int(opregs)
 
             setattr(Opcodes, opname, Opcode(opname, opcode, optype, opregs))
