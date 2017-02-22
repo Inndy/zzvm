@@ -45,6 +45,7 @@ write_instructions_to_file('simple_add', [
     Instruction(Opcodes.RET)
 ])
 
+# this file requires use of built-in syscall_handler
 write_instructions_to_file('write_abcd', [
     Instruction(Opcodes.MOVI, reg1=Registers.R1, imm=0x40),
 
@@ -63,9 +64,20 @@ write_instructions_to_file('write_abcd', [
     Instruction(Opcodes.HLT)
 ])
 
+# this file requires use of built-in syscall_handler
 write_instructions_to_file('write_aaaa', [
     Instruction(Opcodes.MOVI, reg1=Registers.R1, imm=0x41),
     Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
     Instruction(Opcodes.SYS),
     Instruction(Opcodes.ADDI, reg1=Registers.IP, reg2=Registers.IP, imm=-16)
+])
+
+# this file requires use of built-in syscall_handler
+write_instructions_to_file('echo', [
+    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=0), # read
+    Instruction(Opcodes.SYS),
+    Instruction(Opcodes.MOVR, reg1=Registers.R1, reg2=Registers.RA),
+    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
+    Instruction(Opcodes.SYS),
+    Instruction(Opcodes.ADDI, reg1=Registers.IP, reg2=Registers.IP, imm=-24)
 ])
