@@ -15,6 +15,15 @@ class Instruction(object):
         self.reg3 = reg3
         self.imm = imm
 
+    def _raw_regs_to_code(self, required_count):
+        raw_regs = (self.reg1, self.reg2, self.reg3)
+        regs = [ Registers.normalize(r) for r in raw_regs ]
+
+        if any(regs[i] is None for i in range(required_count)):
+            raise ValueError('required register instruction is missing')
+
+        return [ r.code if r else 0 for r in regs ]
+
     def compose(self):
         """
         return encoded instruction in bytes
@@ -23,15 +32,13 @@ class Instruction(object):
         if not op:
             raise ValueError('`opcode` is not opcode (%r)' % self.opcode)
 
-        regs = map(Registers.normalize, (self.reg1, self.reg2, self.reg3))
-        if not all(regs[i] for i in range(op.regs)):
-            raise ValueError('required for this instruction is missing')
+        regs_val = self._raw_regs_to_code(op.regs)
 
         if op.type_ == 'I':
             imm = self.imm & 0xffff
         elif op.type_ == 'R':
-            imm = regs[2]
+            imm = regs_val[2]
         else:
             imm = 0
 
-        return struct.pack('<BBH', op.code, regs[0] << 4 | regs[1], imm)
+        return struct.pack('<BBH', op.code, regs_val[0] << 4 | regs_val[1], imm)
