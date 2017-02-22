@@ -103,11 +103,11 @@ extern FILE *zz_msg_pipe;
 extern int zz_msg_level;
 void zz_output_message(int level, char *msg, ...);
 
-#define zz_debug(MSG) zz_output_message(ZZ_MSGL_DEBUG, MSG)
-#define zz_msg(MSG)   zz_output_message(ZZ_MSGL_MSG,   MSG)
-#define zz_warn(MSG)  zz_output_message(ZZ_MSGL_WARN,  MSG)
-#define zz_error(MSG) zz_output_message(ZZ_MSGL_ERROR, MSG)
-#define zz_fatal(MSG) zz_output_message(ZZ_MSGL_FATAL, MSG)
+#define zz_debug(MSG) zz_output_message(ZZ_MSGL_DEBUG, "%s", MSG)
+#define zz_msg(MSG)   zz_output_message(ZZ_MSGL_MSG,   "%s", MSG)
+#define zz_warn(MSG)  zz_output_message(ZZ_MSGL_WARN,  "%s", MSG)
+#define zz_error(MSG) zz_output_message(ZZ_MSGL_ERROR, "%s", MSG)
+#define zz_fatal(MSG) zz_output_message(ZZ_MSGL_FATAL, "%s", MSG)
 
 #define zz_debug_f(MSG, args...) zz_output_message(ZZ_MSGL_DEBUG, MSG, args)
 #define zz_msg_f(MSG, args...)   zz_output_message(ZZ_MSGL_MSG,   MSG, args)
