@@ -287,7 +287,16 @@ int disassemble_file(const char *filename)
 
 void usage(const char *prog)
 {
-    printf("Usage: %s <command> zz-image\n\n"
+    printf("zzvm\n\n"
+           "  zz virtual machine by Inndy\n\n"
+           "Feature:\n\n"
+#ifdef ZZ_UNIX_ENV
+           "  UNIX Env: Yes\n"
+#else
+           "  UNIX Env: No\n"
+#endif
+           "\n"
+           "Usage: %s <command> zz-image\n\n"
            "  available command:\n"
            "    run\n"
            "      run until HLT instruction\n"
