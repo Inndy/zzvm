@@ -283,7 +283,7 @@ int disassemble_file(const char *filename)
                 fprintf(stderr, "Can not disassemble at address %.4x\n", addr);
                 break;
             }
-            printf("%.4x %s\n", addr, buffer);
+            printf("%.4x: %s\n", addr, buffer);
             addr += sizeof(ZZ_INSTRUCTION);
         }
 
