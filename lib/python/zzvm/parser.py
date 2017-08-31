@@ -8,8 +8,11 @@ import struct
 from .instruction import Instruction
 from .opcode import Opcodes
 from .registers import Registers
-from .section import Section, CodeSection
+from .section import Section
 from .symbol import Symbol
+
+def p32(v):
+    return struct.pack('<I', v)
 
 def unescape_str_to_bytes(x):
     return codecs.escape_decode(x.encode('utf8'))[0]
@@ -67,19 +70,13 @@ class Parser(object):
                 if len(args) > 1:
                     addr = int(args[1], 16)
                 else:
-                    addr = None
-
-                if name == 'TEXT':
-                    if addr is None:
+                    if name == 'TEXT':
                         addr = 0x4000
-                    new_sect = CodeSection(addr)
-                    sections['TEXT'] = new_sect
-                else:
-                    if addr is None:
+                    else:
                         addr = 0x6000
-                    new_sect = Section(addr)
-                    sections['DATA'] = new_sect
 
+                new_sect = Section(addr)
+                sections[name] = new_sect
                 current_section = new_sect
             elif line.startswith('.include'):
                 filename = line.split(maxsplit=1)[1].strip()
@@ -106,10 +103,6 @@ class Parser(object):
                 data = line[4:].strip()
                 bytes_data = unescape_str_to_bytes(data[1:-1])
                 current_section.write(bytes_data + b'\0\0')
-            elif line.startswith('jmp'):
-                target = self.try_parse_imm(line.split()[1], rel=True)
-                ins = Instruction('ADDI', 'IP', 'IP', imm=target)
-                current_section.write(ins)
             elif line[-1] == ':':
                 label_name = line[:-1]
                 current_section.label(label_name)
@@ -142,17 +135,23 @@ class Parser(object):
         for name, section in self.sections.items():
             buff = io.BytesIO()
 
-            if name == 'TEXT':
-                ip = section.addr
-                for ins in section.container:
+            ip = section.addr
+            for data in section.container:
+                if type(data) is Instruction:
+                    ins = data
                     if type(ins.imm) is Symbol:
                         sym = ins.imm
                         buff.write(ins.compose(sym.resolve(self.resolve_label, ip)))
                     else:
                         buff.write(ins.compose())
                     ip += 4
-            else:
-                buff.write(section.raw())
+                elif type(data) is Symbol:
+                    val = data.resolve(self.resolve_label, ip)
+                    buff.write(p32(val))
+                    ip += 4
+                elif type(data) is bytes:
+                    buff.write(data)
+                    ip += len(data)
 
             body = buff.getvalue()
             self.section_bodies[name] = body
@@ -175,38 +174,40 @@ class Parser(object):
     def parse_instruction(self, line):
         try:
             ins_name, args = line.split(maxsplit=1)
-            if ins_name.upper() == 'JGEI':
-                yield from self.parse_instruction('JEI ' + args)
-                yield from self.parse_instruction('JGI ' + args)
-                return
             args = [ i.strip() for i in args.split(',') ]
         except:
             ins_name = line
             args = []
 
+        if ins_name.upper() == 'JMP':
+            is_jmp = True
+            ins_name = 'ADDI'
+            args = ['IP', 'IP', args[0]]
+        else:
+            is_jmp = False
+
         if len(args) > 0:
-            if ins_name[0].upper() == 'J' or ins_name.upper() == 'CALL':
+            if ins_name[0].upper() == 'J' or ins_name.upper() == 'CALL' or is_jmp:
                 rel = True
             else:
                 rel = False
 
             imm = self.try_parse_imm(args[-1], rel=rel)
-            if rel and imm is None:
-                raise ValueError('jump instruction must have target\nline: %r' % line)
-        else:
-            imm = None
-
-        if imm is None:
-            yield Instruction(ins_name, *args, imm=imm)
-        else:
-            regs = args[:-1]
+            if imm is None:
+                if rel:
+                    raise ValueError('jump instruction must have target\nline: %r' % line)
+                regs = args
+            else:
+                regs = args[:-1]
             yield Instruction(ins_name, *regs, imm=imm)
+        else:
+            yield Instruction(ins_name, *args)
 
     def try_parse_imm(self, val, rel=False):
         if val[0] == '$':
             if '+' in val:
                 name, offset = val[1:].split('+')
-                offset = int(offset, 16)
+                offset = self._parse_int(offset)
                 return Symbol(name, offset, is_relative=rel)
             else:
                 return Symbol(val[1:], is_relative=rel)

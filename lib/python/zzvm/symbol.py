@@ -11,7 +11,7 @@ class Symbol(object):
         )
 
     def resolve(self, find, current):
-        addr = find(self.name)
+        addr = find(self.name) + self.offset
         if addr is None:
             raise ValueError('Can not resolve symbol %s' % self.name)
 

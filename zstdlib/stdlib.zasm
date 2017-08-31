@@ -97,8 +97,9 @@ addr r1, r2, r3 ; dst = buf + counter
 addi r3, r3, 1  ; counter++
 st   ra, r1, 0  ; *dst = read()
 
-jgei r3, r4, $gets_end_loop
-jni  ra, r5, $gets_loop
+jei  ra, r5, $gets_end_loop
+jgi  r4, r3, $gets_loop
+
 gets_end_loop:
 movr ra, r3
 ret
