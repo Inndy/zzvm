@@ -273,7 +273,6 @@ int zz_execute(ZZVM *vm, int count, int *stop_reason)
             case ZZOP_ST:   *ZZ_MEM(ctx, uint16_t, rega[r2] + ins->imm) = rega[r1]; break;
 
             case ZZOP_HLT:
-                zz_msg("[MESSAGE] vm halt\n");
                 *stop_reason = ZZ_HALT;
                 vm->state = ZZ_ST_SLEEP;
                 return ZZ_SUCCESS;
