@@ -13,4 +13,4 @@ test: test.o zzvm.o
 	$(CC) $< -c $(CFLAGS)
 
 clean:
-	rm *.o zzvm test
+	rm *.o zzvm test || true
