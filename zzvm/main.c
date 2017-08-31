@@ -227,9 +227,7 @@ int run_file(const char *filename, int trace)
     zz_msg_pipe = stderr;
 
     int stop_reason = ZZ_SUCCESS;
-    while(stop_reason != ZZ_HALT) {
-        int ret_val = zz_execute(vm, 1, &stop_reason);
-
+    while(1) {
         if(trace) {
             char buffer[64];
             ZZ_INSTRUCTION *ins = zz_fetch(&vm->ctx);
@@ -238,7 +236,11 @@ int run_file(const char *filename, int trace)
             dump_vm_context(vm);
         }
 
-        if(ret_val != ZZ_SUCCESS) {
+        if(stop_reason == ZZ_HALT) {
+            break;
+        }
+
+        if(zz_execute(vm, 1, &stop_reason) != ZZ_SUCCESS) {
             fprintf(zz_msg_pipe, "Failed to execute, stop_reason = %d\n", stop_reason);
             break;
         }
