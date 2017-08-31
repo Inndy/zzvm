@@ -500,6 +500,8 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
             return _zz_disasm_2i(buffer, limit, ip, ins);
 
         case ZZOP_CALL:
+            return _zz_disasm_1j(buffer, limit, ip, ins);
+
         case ZZOP_PUSI:
             return _zz_disasm_1i(buffer, limit, ip, ins);
 
