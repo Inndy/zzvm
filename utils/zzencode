@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import struct
+try:
+    import better_exceptions
+except:
+    pass
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib/python')))
+
+import zzvm.encode
+
+if '-d' in sys.argv[1:]:
+    act = zzvm.encode.zz_decode_data
+else:
+    act = zzvm.encode.zz_encode_data
+
+files = [ i for i in sys.argv[1:] if i[0] != '-' ]
+
+try:
+    infile = open(files[0], 'rb')
+except:
+    infile = sys.stdin.buffer
+
+try:
+    outfile = open(files[1], 'wb')
+except:
+    outfile = sys.stdout.buffer
+
+def split(b):
+    left = len(b) % 8
+    if not left:
+        return b, b''
+    else:
+        return b[:-left], b[-left:]
+
+last_block = b''
+while True:
+    r = infile.read(4096)
+    block, last_block = split(last_block + r)
+    outfile.write(act(block))
+    if not r:
+        if last_block:
+            print('warning: left %d bytes... (%r)' % (len(last_block), last_block), file=sys.stderr)
+        break

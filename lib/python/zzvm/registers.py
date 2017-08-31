@@ -18,7 +18,8 @@ class Register(object):
         return self.name
 
     def __repr__(self):
-        return 'Register(name=%r, code=%r)' % (self.name, self.code)
+        return 'Register(%r)' % (self.name)
+        # return 'Register(name=%r, code=%r)' % (self.name, self.code)
 
 class Registers:
     RA = Register('RA', 0)

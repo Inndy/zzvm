@@ -3,81 +3,20 @@
 import sys
 import os
 import struct
+try:
+    import better_exceptions
+except:
+    pass
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib/python')))
 
-from zzvm import Instruction, Opcodes, Registers
+from zzvm import Parser, encode
 
-def zz_encode_byte(b):
-    return bin(b)[2:].zfill(8).translate(str.maketrans('10', 'Zz')).encode()
+try:
+    outfile = sys.argv[2]
+except:
+    outfile = 'a.zz'
 
-def zz_encode_data(data):
-    return b''.join(zz_encode_byte(i) for i in data)
-
-def write_instructions_to_file(filename, instructions):
-    code = b''.join(ins.compose() for ins in instructions)
-
-    with open(filename, 'wb') as fout:
-        header = struct.pack('<ccHHH',
-            b'Z', b'z', # magic
-            0,          # file_ver
-            0x4000,     # entry
-            1,          # section_count
-        )
-        section = struct.pack('<HH',
-            0x4000,          # section_addr
-            len(code),       # section_size
-        ) + code
-        ending = b'zzzz'
-        fout.write(zz_encode_data(header + section + ending))
-
-write_instructions_to_file('simple_add', [
-    Instruction(Opcodes.PUSI, imm=123),
-    Instruction(Opcodes.PUSI, imm=456),
-    Instruction(Opcodes.CALL, imm=8),
-    Instruction(Opcodes.ADDI, reg1=Registers.SP, reg2=Registers.SP, imm=8),
-    Instruction(Opcodes.HLT),
-    Instruction(Opcodes.PUSH, reg1=Registers.R1),
-    Instruction(Opcodes.LD, reg1=Registers.R1, reg2=Registers.SP, imm=4),
-    Instruction(Opcodes.LD, reg1=Registers.RA, reg2=Registers.SP, imm=6),
-    Instruction(Opcodes.ADDR, reg1=Registers.RA, reg2=Registers.RA, reg3=Registers.R1),
-    Instruction(Opcodes.POP, reg1=Registers.R1),
-    Instruction(Opcodes.RET)
-])
-
-# this file requires use of built-in syscall_handler
-write_instructions_to_file('write_abcd', [
-    Instruction(Opcodes.MOVI, reg1=Registers.R1, imm=0x40),
-
-    Instruction(Opcodes.ADDI, reg1=Registers.R1, reg2=Registers.R1, imm=1),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.ADDI, reg1=Registers.R1, reg2=Registers.R1, imm=1),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.ADDI, reg1=Registers.R1, reg2=Registers.R1, imm=1),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.ADDI, reg1=Registers.R1, reg2=Registers.R1, imm=1),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.HLT)
-])
-
-# this file requires use of built-in syscall_handler
-write_instructions_to_file('write_aaaa', [
-    Instruction(Opcodes.MOVI, reg1=Registers.R1, imm=0x41),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.ADDI, reg1=Registers.IP, reg2=Registers.IP, imm=-16)
-])
-
-# this file requires use of built-in syscall_handler
-write_instructions_to_file('echo', [
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=0), # read
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.MOVR, reg1=Registers.R1, reg2=Registers.RA),
-    Instruction(Opcodes.MOVI, reg1=Registers.RA, imm=1), # write
-    Instruction(Opcodes.SYS),
-    Instruction(Opcodes.ADDI, reg1=Registers.IP, reg2=Registers.IP, imm=-24)
-])
+parser = Parser(open(sys.argv[1]))
+payload = parser.build()
+open(outfile, 'wb').write(encode.zz_encode_data(payload))
