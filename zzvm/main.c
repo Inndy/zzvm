@@ -268,8 +268,7 @@ int disassemble_file(const char *filename)
         ZZ_ADDRESS addr = section->section_addr;
         ZZ_ADDRESS addr_end = addr + section->section_size;
 
-        printf("disassembly for section #%d from 0x%.4x to 0x%.4x\n", i, addr, addr_end);
-        puts("");
+        printf("disassembly for section #%d from 0x%.4x to 0x%.4x\n\n", i, addr, addr_end);
 
         if(addr_end > ZZ_MEM_LIMIT - sizeof(ZZ_INSTRUCTION) || addr_end < addr) {
             addr_end = ZZ_MEM_LIMIT - sizeof(ZZ_INSTRUCTION);
@@ -287,7 +286,16 @@ int disassemble_file(const char *filename)
             addr += sizeof(ZZ_INSTRUCTION);
         }
 
-        puts("");
+        puts("\nHexdump:");
+        addr = section->section_addr;
+        while(addr < addr_end) {
+            if((addr & 0xf) == 0)
+                printf("%.4x: ", addr);
+            printf("%.2x%c", vm->ctx.memory[addr], (addr & 0xf) == 0xf ? '\n' : ' ');
+            addr++;
+        }
+
+        putchar('\n');
     }
 
     free(header);
