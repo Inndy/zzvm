@@ -61,7 +61,7 @@ class Parser(object):
             if not line:
                 continue
             elif line.startswith('.sect'):
-                args = line.split(maxsplit=1)[1].split(',')
+                args = line.split(maxsplit=1)[1].split(' ')
                 name = args[0].upper()
 
                 if len(args) > 1:
@@ -74,7 +74,7 @@ class Parser(object):
                         addr = 0x4000
                     new_sect = CodeSection(addr)
                     sections['TEXT'] = new_sect
-                elif name == 'DATA':
+                else:
                     if addr is None:
                         addr = 0x6000
                     new_sect = Section(addr)
