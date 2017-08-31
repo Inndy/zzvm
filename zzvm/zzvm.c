@@ -487,8 +487,10 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
         case ZZOP_JEI:
         case ZZOP_JNI:
         case ZZOP_JGI:
-        case ZZOP_JZI:
             return _zz_disasm_3j(buffer, limit, ip, ins);
+
+        case ZZOP_JZI:
+            return _zz_disasm_2j(buffer, limit, ip, ins);
 
         case ZZOP_LD:
         case ZZOP_ST:
