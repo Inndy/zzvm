@@ -1,0 +1,7 @@
+rand
+andi ra, ra, 0xff
+randloop:
+addi ra, ra, 0xffff
+jzi ra, $outloop
+jmp $randloop
+outloop:

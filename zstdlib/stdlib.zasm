@@ -1,0 +1,106 @@
+; ----------------------------------------------
+; write(buff, length)
+write:
+ld r2, sp, 4    ; length
+ld r3, sp, 2    ; buffer
+xorr r4, r4, r4 ; counter
+
+write_loop:
+addr r1, r3, r4 ; r1 = buffer + counter
+ld r1, r1, 0    ; r1 = *r1
+movi ra, 1      ; write
+sys
+
+addi r4, r4, 1  ; i++
+jgi r2, r4, $write_loop
+ret
+
+; ----------------------------------------------
+; put(buff)
+put:
+ld r2, sp, 2 ; buff
+movi r3, 0   ; ctr
+
+put_loop:
+addr r4, r2, r3 ; ptr = buff + ctr
+addi r3, r3, 1  ; ctr++
+ld r1, r4, 0    ; byte = *ptr
+jzi r1, $put_exit
+
+movi ra, 1      ; putchar(byte)
+sys
+jmp $put_loop
+
+put_exit:
+ret
+
+; ----------------------------------------------
+; write(buff, length)
+write:
+ld r2, sp, 4    ; length
+ld r3, sp, 2    ; buffer
+xorr r4, r4, r4 ; counter
+
+write_loop:
+addr r1, r3, r4 ; r1 = buffer + counter
+ld r1, r1, 0    ; r1 = *r1
+movi ra, 1      ; write
+sys
+
+addi r4, r4, 1  ; i++
+jgi r2, r4, $write_loop
+ret
+
+; ----------------------------------------------
+; put(buff)
+put:
+ld r2, sp, 2 ; buff
+movi r3, 0   ; ctr
+
+put_loop:
+addr r4, r2, r3 ; ptr = buff + ctr
+addi r3, r3, 1  ; ctr++
+ld r1, r4, 0    ; byte = *ptr
+jzi r1, $put_exit
+
+movi ra, 1      ; putchar(byte)
+sys
+jmp $put_loop
+
+put_exit:
+ret
+
+; ----------------------------------------------
+; puts(buff)
+puts:
+ld ra, sp, 2
+push ra
+call $put
+addi sp, sp, 2
+movi r1, 0xa
+movi ra, 1
+sys
+ret
+
+; ----------------------------------------------
+; gets_n(buff, length)
+gets_n:
+ld r2, sp, 2 ; buff
+ld r4, sp, 4 ; length
+movi r3, 0   ; counter = 0
+movi r5, 0xa ; '\n'
+
+gets_loop:
+movi ra, 0
+sys
+addr r1, r2, r3 ; dst = buf + counter
+addi r3, r3, 1  ; counter++
+st   ra, r1, 0  ; *dst = read()
+
+jgei r3, r4, $gets_end_loop
+jni  ra, r5, $gets_loop
+gets_end_loop:
+movr ra, r3
+ret
+
+; .include zstdlib/crypto.zasm

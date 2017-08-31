@@ -1,0 +1,19 @@
+.sect text
+
+gg:
+xorr ra, ra, ra
+addi r1, ra, 5
+rand
+movi r1, 0x41
+movi ra, 1
+sys
+nop
+neg r2, r1
+jmp $aaa
+xorr r3, r3, r3
+aaa:
+jmp $gg
+
+.sect data
+xxx:
+.db 0x55, 0x41, 0x42, 0x43

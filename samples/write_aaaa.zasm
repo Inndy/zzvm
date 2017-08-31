@@ -1,0 +1,6 @@
+.sect text
+start:
+movi r1, 0x41
+movi ra, 1
+sys
+jmp $start

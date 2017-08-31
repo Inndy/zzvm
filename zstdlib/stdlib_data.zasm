@@ -1,0 +1,4 @@
+; ----------------------------------------------
+; string table for crypto.zasm
+str_xor_crypt_err:
+.str 'error in xor_crypt(buff, key, len): `l` must be even'

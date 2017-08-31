@@ -1,0 +1,26 @@
+.sect text
+
+.include zstdlib/stdlib.zasm
+
+start:
+
+pusi $str
+call $puts
+pop ra
+
+back:
+movi ra, 0
+sys
+movi r3, -1
+jei ra, r3, $exit
+movr r1, ra
+movi ra, 1
+sys
+jmp $back
+
+exit:
+hlt
+
+.sect data
+str:
+.str 'echo as a service'

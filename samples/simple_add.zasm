@@ -1,0 +1,16 @@
+.sect text
+
+start:
+pusi 123
+pusi 456
+call $do_add
+addi sp, sp, 8
+hlt
+
+do_add:
+push r1
+ld r1, sp, 4
+ld ra, sp, 6
+addr ra, ra, r1
+pop r1
+ret

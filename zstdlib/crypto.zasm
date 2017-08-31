@@ -1,0 +1,13 @@
+; ----------------------------------------------
+; xor_crypt(buff, key, len)
+; length MUST NOT be odd
+xor_crypt:
+ld r2, sp, 2 ; buff
+ld r3, sp, 4 ; key
+ld r4, sp, 6 ; len
+movi r5, 0   ; ctr
+
+xor_crypt_error:
+pusi $str_xor_crypt_err
+call $puts
+hlt
