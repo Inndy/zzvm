@@ -37,7 +37,8 @@ class QueueReader(object):
 
 class Parser(object):
     def __init__(self, fin):
-        self.sections = []
+        self.sections = None
+        self.section_bodies = {}
         self.entry = None
 
         if type(fin) is str:
@@ -144,7 +145,6 @@ class Parser(object):
             if name == 'TEXT':
                 ip = section.addr
                 for ins in section.container:
-                    print(ins)
                     if type(ins.imm) is Symbol:
                         sym = ins.imm
                         buff.write(ins.compose(sym.resolve(self.resolve_label, ip)))
@@ -155,6 +155,7 @@ class Parser(object):
                 buff.write(section.raw())
 
             body = buff.getvalue()
+            self.section_bodies[name] = body
 
             bodies.append(body)
             sections.append(struct.pack('<HH',
@@ -191,7 +192,7 @@ class Parser(object):
 
             imm = self.try_parse_imm(args[-1], rel=rel)
             if rel and imm is None:
-                raise ValueError('jump instruction must have target')
+                raise ValueError('jump instruction must have target\nline: %r' % line)
         else:
             imm = None
 
