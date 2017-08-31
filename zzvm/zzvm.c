@@ -211,8 +211,8 @@ uint16_t zz_pop(ZZVM_CTX *ctx)
     return data;
 }
 
-#define ZZ_SHIFT(VALUE, OFFSET) ((OFFSET) & 8) ? (VALUE << (OFFSET & 7)) : \
-                                                 (VALUE >> (OFFSET & 7))
+#define ZZ_DO_SHIFT(V, O) (O >= 0) ? (V >> O) : (V << -O)
+#define ZZ_SHIFT(VALUE, OFFSET) ZZ_DO_SHIFT((VALUE), ((int16_t)(OFFSET)))
 
 int zz_execute(ZZVM *vm, int count, int *stop_reason)
 {
