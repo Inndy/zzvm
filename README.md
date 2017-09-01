@@ -6,7 +6,7 @@ Just a simple VM.
 
 - [x] VM Interpreter
 - [x] Disassembler
-- [ ] Assembler
+- [x] Assembler
 - [ ] Invent A Language
 - [ ] Comiler to ZZVM
 
