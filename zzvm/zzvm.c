@@ -495,7 +495,6 @@ int zz_disasm(ZZ_ADDRESS ip, ZZ_INSTRUCTION *ins, char *buffer, size_t limit)
         case ZZOP_LD:
         case ZZOP_ST:
             return _zz_disasm_3i(buffer, limit, ip, ins);
-            break;
 
         case ZZOP_MOVI:
             return _zz_disasm_2i(buffer, limit, ip, ins);
