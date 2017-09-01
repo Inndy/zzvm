@@ -5,7 +5,25 @@ xor_crypt:
 ld r2, sp, 2 ; buff
 ld r3, sp, 4 ; key
 ld r4, sp, 6 ; len
+
+; check `len`
+andi r5, r4, 1
+xori r5, r5, 1
+jzi r5, $xor_crypt_error
 movi r5, 0   ; ctr
+
+xor_crypt_loop:
+addr ra, r2, r5
+ld ra, ra, 0
+addr r1, r3, r5
+ld r1, r1, 0
+xorr r1, ra, r1
+addr ra, r2, r5
+st r1, ra, 0
+addi r5, r5, 2
+jgi r4, r5, $xor_crypt_loop
+
+ret
 
 xor_crypt_error:
 pusi $str_xor_crypt_err
