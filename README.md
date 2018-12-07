@@ -8,7 +8,7 @@ Just a simple VM.
 - [x] Disassembler
 - [x] Assembler
 - [ ] Invent A Language
-- [ ] Comiler to ZZVM
+- [ ] Compiler to ZZVM
 
 ## License
 
